@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {Button, Col, Form, FormControl, ListGroup, Modal, Row, Tab, Table} from "react-bootstrap";
-import {handleInputChange} from "../untils";
+import {handleInputChange} from "../utils";
 import useLists from "../hooks/useLists";
 import {IEditItem, IList, IListDetail, IState} from "../types";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
