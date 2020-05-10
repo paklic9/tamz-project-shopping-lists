@@ -1,0 +1,105 @@
+.aboutPage {
+  text-align: center;
+}
+
+.btn {
+  margin: 5pt 0 0 0 !important;
+}
+
+.addNewItemButton {
+  margin: 5pt 0 !important;
+}
+
+.header {
+  text-align: center;
+  background-color: aqua;
+  margin-bottom: 10pt;
+}
+
+.header .title {
+  font-size: 30pt;
+  font-weight: bold;
+  font-family: "Comic Sans MS", cursive, sans-serif;
+  cursor: pointer;
+}
+
+.footer {
+  text-align: center;
+  background-color: lightgrey;
+  margin-top: 15pt;
+}
+
+.content {
+  /*min-height: 50vh;*/
+}
+
+.lists {
+  cursor: pointer;
+}
+
+.controlIcon {
+  font-size: 21pt;
+  cursor: pointer;
+}
+
+.disabledWrapper{
+  cursor: no-drop;
+}
+
+.disabled {
+  pointer-events: none;
+}
+
+#importFile {
+  display: none;
+}
+
+.importFile {
+  margin: 0;
+}
+
+.table {
+
+}
+
+.id {
+  width: 20pt;
+  text-align: center;
+}
+
+.text {
+  /*min-width: 23vh;*/
+  /*min-width: 100pt;*/
+  min-width: 91pt;
+  /*min-width: 16vh;*/
+}
+
+.priority {
+  text-align: center;
+  width: 50pt;
+}
+
+.actions {
+  text-align: center;
+  width: 57pt;
+}
+
+.textCentered {
+  text-align: center;
+}
+
+.sapceBetween {
+  display: flex;
+  justify-content: space-between;
+}
+
+.priorityCheckbox {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  margin-top: 3pt;
+}
+
+.priorityCheckbox input {
+  transform: scale(1.9);
+}
