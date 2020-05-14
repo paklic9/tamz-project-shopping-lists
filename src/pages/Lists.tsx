@@ -157,89 +157,94 @@ const Lists: React.FC = () => {
 
   return (
     <>
-      <Row>
-        <Col>
-          <Tab.Container id="list-group-tabs-example">
-            <Row>
-              <Col xs={4} style={{minWidth: "125pt"}}>
-                <ListGroup style={{marginTop: "5pt"}}>
-                  {lists.map((list: IList, i) => (
-                    <ListGroup.Item
-                      className="lists"
-                      onClick={() => {
-                        resetInputs();
-                        setEditListObj(list);
-                        dispatch(setNewItemButtonVisiblity(true));
-                      }}
-                      href={list.name + i}
-                      key={list.name + i}
-                    >
-                      {list.name}
-                    </ListGroup.Item>
-                  ))}
-                </ListGroup>
-              </Col>
-              <Col xs={8}>
-                <Tab.Content>
-                  {newItemButtonVisiblity && (
-                    <Button
-                      className="addNewItemButton"
-                      disabled={!!(editItem?.editingItem || newItem)}
-                      onClick={() => setNewItem(true)}
-                    >
-                      Add new item
-                    </Button>
-                  )}
-                  {lists.map((list: IList, i) => (
-                    <Tab.Pane key={"list" + i} eventKey={list.name + i}>
-                      <Table bordered hover size="sm" className="table">
-                        <thead>
-                        <tr>
-                          <th className="id">id</th>
-                          <th className="text">Text</th>
-                          <th className="priority">Priority</th>
-                          <th className="actions">Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {list.detail.map((detail: IListDetail, index) => (
-                          <tr
-                            key={"detal" + index}
-                            style={detail.priority ? {
-                              backgroundColor: 'rgb(190,0,0)',
-                              color: 'white'
-                            } : {backgroundColor: 'white'}}
-                          >
-                            <td className="textCentered">{detail.id}</td>
-                            <td>
-                              {editItem?.editingItemId === detail.id ? (
-                                <FormControl
-                                  as="textarea"
-                                  value={newItemText}
-                                  onChange={handleInputChange(setNewItemText)}
-                                />
-                              ) : (
-                                detail.text
-                              )}
-                            </td>
-                            <td className="textCentered">
-                              {editItem?.editingItemId === detail.id ? (
-                                <Form.Check
-                                  checked={newItemPriority}
-                                  className="priorityCheckbox"
-                                  type="checkbox"
-                                  id={'priority' + new Date(detail.date).getTime()}
-                                  onChange={() => {
-                                    setNewItemPriority(
-                                      (document.getElementById('priority' + new Date(detail.date).getTime()) as HTMLInputElement).checked
-                                    );
-                                  }}
-                                />
-                              ) : (
-                                detail.priority ? "True" : "False"
-                              )}
-                            </td>
-                            <td className="sapceBetween">
+      {lists.length > 0 ? (
+        <Row>
+          <Col>
+            <Tab.Container id="list-group-tabs-example">
+              <Row>
+                <Col xs={4} style={{minWidth: "125pt"}}>
+                  <h2 className="listsTitle">Lists:</h2>
+                  <ListGroup style={{marginTop: "5pt"}}>
+                    {lists.map((list: IList, i) => (
+                      <ListGroup.Item
+                        className="lists"
+                        onClick={() => {
+                          resetInputs();
+                          setEditListObj(list);
+                          dispatch(setNewItemButtonVisiblity(true));
+                        }}
+                        href={list.name + i}
+                        key={list.name + i}
+                      >
+                        {list.name}
+                      </ListGroup.Item>
+                    ))}
+                  </ListGroup>
+                </Col>
+                <Col xs={8}>
+                  <Tab.Content>
+                    {newItemButtonVisiblity && (
+                      <div className="buttonAndTitleWrapper">
+                        <h2 className="itemsTitle">Items in {editListObj?.name}:</h2>
+                        <Button
+                          className="addNewItemButton"
+                          disabled={!!(editItem?.editingItem || newItem)}
+                          onClick={() => setNewItem(true)}
+                        >
+                          Add new item
+                        </Button>
+                      </div>
+                    )}
+                    {lists.map((list: IList, i) => (
+                      <Tab.Pane key={"list" + i} eventKey={list.name + i}>
+                        <Table bordered hover size="sm" className="table">
+                          <thead>
+                          <tr>
+                            <th className="id">id</th>
+                            <th className="text">Text</th>
+                            <th className="priority">Priority</th>
+                            <th className="actions">Actions</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          {list.detail.map((detail: IListDetail, index) => (
+                            <tr
+                              key={"detal" + index}
+                              style={detail.priority ? {
+                                backgroundColor: 'rgb(190,0,0)',
+                                color: 'white'
+                              } : {backgroundColor: 'white'}}
+                            >
+                              <td className="textCentered">{detail.id}</td>
+                              <td>
+                                {editItem?.editingItemId === detail.id ? (
+                                  <FormControl
+                                    as="textarea"
+                                    value={newItemText}
+                                    onChange={handleInputChange(setNewItemText)}
+                                  />
+                                ) : (
+                                  detail.text
+                                )}
+                              </td>
+                              <td className="textCentered">
+                                {editItem?.editingItemId === detail.id ? (
+                                  <Form.Check
+                                    checked={newItemPriority}
+                                    className="priorityCheckbox"
+                                    type="checkbox"
+                                    id={'priority' + new Date(detail.date).getTime()}
+                                    onChange={() => {
+                                      setNewItemPriority(
+                                        (document.getElementById('priority' + new Date(detail.date).getTime()) as HTMLInputElement).checked
+                                      );
+                                    }}
+                                  />
+                                ) : (
+                                  detail.priority ? "True" : "False"
+                                )}
+                              </td>
+                              <td className="sapceBetween">
                                   <span
                                     className={`${(newItem || (editItem?.editingItem && editItem.editingItemId !== detail.id)) ? 'disabledWrapper' : ''}`}
                                   >
@@ -261,64 +266,65 @@ const Lists: React.FC = () => {
                                       />
                                     )}
                                   </span>
-                              <span
-                                className={`${(newItem || (editItem && editItem.editingItem)) ? 'disabledWrapper' : ''}`}>
+                                <span
+                                  className={`${(newItem || (editItem && editItem.editingItem)) ? 'disabledWrapper' : ''}`}>
                                     <FontAwesomeIcon
                                       icon={faTrashAlt}
                                       className={`controlIcon ${(newItem || (editItem && editItem.editingItem)) && 'disabled'}`}
                                       onClick={() => handleDeleteItemFromList(list.key, detail.id)}
                                     />
                                   </span>
-                            </td>
-                          </tr>
-                        ))}
-                        {newItem ? (
-                          <tr>
-                            <td className="textCentered">
-                              {list.detail.length > 0 ? list.detail[list.detail.length - 1].id + 1 : 1}
-                            </td>
-                            <td>
-                              <FormControl
-                                id="text"
-                                as="textarea"
-                                onChange={handleInputChange(setNewItemText)}/>
-                            </td>
-                            <td>
-                              <Form.Check
-                                className="priorityCheckbox"
-                                type="checkbox"
-                                id="priority"
-                                onChange={() => {
-                                  setNewItemPriority(
-                                    (document.getElementById('priority') as HTMLInputElement).checked
-                                  );
-                                }}
-                              />
-                            </td>
-                            <td className="sapceBetween">
-                              <FontAwesomeIcon
-                                icon={faPlus}
-                                className="controlIcon"
-                                onClick={() => handleAddItemToList(list.key)}
-                              />
-                              <FontAwesomeIcon
-                                icon={faTimes}
-                                className="controlIcon"
-                                onClick={() => resetInputs()}
-                              />
-                            </td>
-                          </tr>
-                        ) : undefined}
-                        </tbody>
-                      </Table>
-                    </Tab.Pane>
-                  ))}
-                </Tab.Content>
-              </Col>
-            </Row>
-          </Tab.Container>
-        </Col>
-      </Row>
+                              </td>
+                            </tr>
+                          ))}
+                          {newItem ? (
+                            <tr>
+                              <td className="textCentered">
+                                {list.detail.length > 0 ? list.detail[list.detail.length - 1].id + 1 : 1}
+                              </td>
+                              <td>
+                                <FormControl
+                                  id="text"
+                                  as="textarea"
+                                  onChange={handleInputChange(setNewItemText)}/>
+                              </td>
+                              <td>
+                                <Form.Check
+                                  className="priorityCheckbox"
+                                  type="checkbox"
+                                  id="priority"
+                                  onChange={() => {
+                                    setNewItemPriority(
+                                      (document.getElementById('priority') as HTMLInputElement).checked
+                                    );
+                                  }}
+                                />
+                              </td>
+                              <td className="sapceBetween">
+                                <FontAwesomeIcon
+                                  icon={faPlus}
+                                  className="controlIcon"
+                                  onClick={() => handleAddItemToList(list.key)}
+                                />
+                                <FontAwesomeIcon
+                                  icon={faTimes}
+                                  className="controlIcon"
+                                  onClick={() => resetInputs()}
+                                />
+                              </td>
+                            </tr>
+                          ) : undefined}
+                          </tbody>
+                        </Table>
+                      </Tab.Pane>
+                    ))}
+                  </Tab.Content>
+                </Col>
+              </Row>
+            </Tab.Container>
+          </Col>
+        </Row>
+      ) : undefined}
       <Row className="controls">
         <Col>
           <Modal

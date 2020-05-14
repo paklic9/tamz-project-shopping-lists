@@ -7,7 +7,7 @@
 }
 
 .addNewItemButton {
-  margin: 5pt 0 !important;
+  margin: 0 0 5pt 0 !important;
 }
 
 .header {
@@ -42,7 +42,7 @@
   cursor: pointer;
 }
 
-.disabledWrapper{
+.disabledWrapper {
   cursor: no-drop;
 }
 
@@ -56,10 +56,6 @@
 
 .importFile {
   margin: 0;
-}
-
-.table {
-
 }
 
 .id {

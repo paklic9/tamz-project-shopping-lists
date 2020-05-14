@@ -1,4 +1,4 @@
-export const setLists = (lists:any) => ({
+export const setLists = (lists: any) => ({
   payload: lists,
   type: 'SET_LISTS',
 });
