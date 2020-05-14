@@ -20,7 +20,7 @@ const Layout: React.FC = () => {
       <Row className="content">
         <Col>
           <Switch>
-            <Route exact path="/tamz-project-shopping-lists/" render={() => <Redirect to="/" />} />
+            <Route exact path="/tamz-project-shopping-lists" render={() => <Redirect to="/" />} />
             <Route path="/about" component={About}/>
             <Route path="/" component={Lists}/>
           </Switch>
