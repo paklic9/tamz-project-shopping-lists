@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Link, Route, Switch, useHistory, Redirect} from "react-router-dom";
+import {Link, Route, Switch, useHistory, BrowserRouter} from "react-router-dom";
 import {Col, Container, Row} from "react-bootstrap";
 import Lists from "./Lists";
 import About from "./About";
@@ -20,9 +20,10 @@ const Layout: React.FC = () => {
       <Row className="content">
         <Col>
           <Switch>
-            <Route exact path="/tamz-project-shopping-lists" render={() => <Redirect to="/" />} />
-            <Route path="/about" component={About}/>
-            <Route path="/" component={Lists}/>
+            <BrowserRouter basename={window.location.pathname || ''}>
+              <Route path="/about" component={About}/>
+              <Route path="/" component={Lists}/>
+            </BrowserRouter>
           </Switch>
         </Col>
       </Row>
