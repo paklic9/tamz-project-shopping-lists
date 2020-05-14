@@ -1,6 +1,18 @@
 import * as React from 'react';
 import {useDispatch, useSelector} from "react-redux";
-import {Button, Col, Form, FormControl, ListGroup, Modal, Row, Tab, Table} from "react-bootstrap";
+import {
+  Button,
+  Col,
+  Form,
+  FormControl,
+  ListGroup,
+  Modal,
+  OverlayTrigger,
+  Popover,
+  Row,
+  Tab,
+  Table
+} from "react-bootstrap";
 import {handleInputChange} from "../utils";
 import useLists from "../hooks/useLists";
 import {IEditItem, IList, IListDetail, IState} from "../types";
@@ -16,6 +28,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import {setNewItemButtonVisiblity} from "../actions";
 
+const popSound = require("../assets/pop.mp3");
+const emptyTrash = require("../assets/RecycleBin.mp3");
+
 const Lists: React.FC = () => {
   const dispatch = useDispatch();
   const [newItem, setNewItem] = React.useState<Boolean>(false);
@@ -28,6 +43,23 @@ const Lists: React.FC = () => {
   const [newItemPriority, setNewItemPriority] = React.useState<boolean>(false);
   const {refetchLists, lists} = useLists();
   const newItemButtonVisiblity = useSelector<IState, boolean>(state => state.newItemButtonVisibility);
+  const audioOnClick = new Audio(popSound);
+  const audioOnDelete = new Audio(emptyTrash);
+
+  function addSoundToButtons() {
+    const bns = document.getElementsByTagName("button");
+    const svgs = document.getElementsByTagName("svg");
+    for (let i = 0; i < bns.length; i++) {
+      bns[i].addEventListener("click", () => audioOnClick.play());
+    }
+    for (let i = 0; i < svgs.length; i++) {
+      svgs[i].addEventListener("click", () => audioOnClick.play());
+    }
+  }
+
+  window.addEventListener("load", () => {
+    addSoundToButtons();
+  });
 
   const resetInputs = React.useCallback(() => {
     if (newItem) {
@@ -155,6 +187,47 @@ const Lists: React.FC = () => {
     (document.getElementById("importFile") as HTMLInputElement).value = "";
   }, [refetchLists])
 
+  //type: 1=remove all lists, 2=remove selected list, 3=remove item from list
+  const confirmDelete = (button: any, type: number, listKey = "", detailId = 0) => {
+    return (
+      <OverlayTrigger
+        rootClose
+        trigger="click"
+        key="top"
+        placement="top"
+        overlay={
+          <Popover id={`popover-positioned-top`}>
+            <Popover.Title as="h3">Are you sure?</Popover.Title>
+            <Popover.Content>
+              <Button onClick={() => {
+                audioOnDelete.play();
+                document.body.click();
+                if (type === 1) {
+                  handleClear(true);
+                } else if (type === 2) {
+                  handleRemoveList();
+                } else if (type === 3) {
+                  handleDeleteItemFromList(listKey, detailId)
+                }
+              }}>
+                Yes
+              </Button>
+              {' '}
+              <Button onClick={() => {
+                audioOnClick.play();
+                document.body.click();
+              }}>
+                No
+              </Button>
+            </Popover.Content>
+          </Popover>
+        }
+      >
+        {button}
+      </OverlayTrigger>
+    )
+  }
+
   return (
     <>
       {lists.length > 0 ? (
@@ -169,6 +242,7 @@ const Lists: React.FC = () => {
                       <ListGroup.Item
                         className="lists"
                         onClick={() => {
+                          audioOnClick.play();
                           resetInputs();
                           setEditListObj(list);
                           dispatch(setNewItemButtonVisiblity(true));
@@ -189,7 +263,10 @@ const Lists: React.FC = () => {
                         <Button
                           className="addNewItemButton"
                           disabled={!!(editItem?.editingItem || newItem)}
-                          onClick={() => setNewItem(true)}
+                          onClick={() => {
+                            audioOnClick.play();
+                            setNewItem(true);
+                          }}
                         >
                           Add new item
                         </Button>
@@ -235,6 +312,7 @@ const Lists: React.FC = () => {
                                     type="checkbox"
                                     id={'priority' + new Date(detail.date).getTime()}
                                     onChange={() => {
+                                      audioOnClick.play();
                                       setNewItemPriority(
                                         (document.getElementById('priority' + new Date(detail.date).getTime()) as HTMLInputElement).checked
                                       );
@@ -244,7 +322,8 @@ const Lists: React.FC = () => {
                                   detail.priority ? "True" : "False"
                                 )}
                               </td>
-                              <td className="sapceBetween">
+                              <td>
+                                <div className="sapceBetween">
                                   <span
                                     className={`${(newItem || (editItem?.editingItem && editItem.editingItemId !== detail.id)) ? 'disabledWrapper' : ''}`}
                                   >
@@ -252,13 +331,17 @@ const Lists: React.FC = () => {
                                       <FontAwesomeIcon
                                         icon={faCheckSquare}
                                         className="controlIcon"
-                                        onClick={() => handleEditItemInList(list.key, detail)}
+                                        onClick={() => {
+                                          audioOnClick.play();
+                                          handleEditItemInList(list.key, detail);
+                                        }}
                                       />
                                     ) : (
                                       <FontAwesomeIcon
                                         icon={faEdit}
                                         className={`controlIcon ${(newItem || (editItem?.editingItem && editItem.editingItemId !== detail.id)) && 'disabled'}`}
                                         onClick={() => {
+                                          audioOnClick.play();
                                           setEditItem({editingItem: true, editingItemId: detail.id});
                                           setNewItemText(detail.text);
                                           setNewItemPriority(detail.priority);
@@ -266,14 +349,21 @@ const Lists: React.FC = () => {
                                       />
                                     )}
                                   </span>
-                                <span
-                                  className={`${(newItem || (editItem && editItem.editingItem)) ? 'disabledWrapper' : ''}`}>
-                                    <FontAwesomeIcon
-                                      icon={faTrashAlt}
-                                      className={`controlIcon ${(newItem || (editItem && editItem.editingItem)) && 'disabled'}`}
-                                      onClick={() => handleDeleteItemFromList(list.key, detail.id)}
-                                    />
+                                  <span
+                                    className={`${(newItem || (editItem && editItem.editingItem)) ? 'disabledWrapper' : ''}`}
+                                  >
+                                    {confirmDelete(
+                                      <FontAwesomeIcon
+                                        icon={faTrashAlt}
+                                        className={`controlIcon ${(newItem || (editItem && editItem.editingItem)) && 'disabled'}`}
+                                        onClick={() => audioOnClick.play()}
+                                      />,
+                                      3,
+                                      list.key,
+                                      detail.id
+                                    )}
                                   </span>
+                                </div>
                               </td>
                             </tr>
                           ))}
@@ -294,6 +384,7 @@ const Lists: React.FC = () => {
                                   type="checkbox"
                                   id="priority"
                                   onChange={() => {
+                                    audioOnClick.play();
                                     setNewItemPriority(
                                       (document.getElementById('priority') as HTMLInputElement).checked
                                     );
@@ -304,12 +395,18 @@ const Lists: React.FC = () => {
                                 <FontAwesomeIcon
                                   icon={faPlus}
                                   className="controlIcon"
-                                  onClick={() => handleAddItemToList(list.key)}
+                                  onClick={() => {
+                                    audioOnClick.play();
+                                    handleAddItemToList(list.key);
+                                  }}
                                 />
                                 <FontAwesomeIcon
                                   icon={faTimes}
                                   className="controlIcon"
-                                  onClick={() => resetInputs()}
+                                  onClick={() => {
+                                    audioOnClick.play();
+                                    resetInputs();
+                                  }}
                                 />
                               </td>
                             </tr>
@@ -352,10 +449,18 @@ const Lists: React.FC = () => {
               </Form.Group>
             </Modal.Body>
             <Modal.Footer>
-              <Button onClick={editList ? () => handleSaveList() : () => handleAddList()}>
+              <Button onClick={() => {
+                audioOnClick.play();
+                editList ? handleSaveList() : handleAddList();
+              }}>
                 {editList ? 'Save' : 'Add'}
               </Button>
-              <Button onClick={() => handleModalClose()}>Close</Button>
+              <Button onClick={() => {
+                handleModalClose();
+                audioOnClick.play();
+              }}>
+                Close
+              </Button>
             </Modal.Footer>
           </Modal>
 
@@ -373,19 +478,19 @@ const Lists: React.FC = () => {
             Edit selected list name
           </Button>
           <br/>
-          <Button
-            disabled={!editListObj}
-            onClick={() => handleRemoveList()}
-          >
-            Remove selected list
-          </Button>
+          {confirmDelete(
+            <Button disabled={!editListObj}>
+              Remove selected list
+            </Button>,
+            2
+          )}
           <br/>
-          <Button
-            disabled={lists.length === 0}
-            onClick={() => handleClear(true)}
-          >
-            Remove all lists
-          </Button>
+          {confirmDelete(
+            <Button disabled={lists.length === 0}>
+              Remove all lists
+            </Button>,
+            1
+          )}
           <br/>
           <Button
             disabled={lists.length === 0}
@@ -395,16 +500,16 @@ const Lists: React.FC = () => {
           </Button>
           <br/>
           <span>
-                <label htmlFor="importFile" className="importFile btn btn-primary">
-                  <FontAwesomeIcon icon={faCloudUploadAlt}/> Import lists
-                </label>
-                <input
-                  type='file'
-                  id='importFile'
-                  accept='.json'
-                  onChange={e => handleImportLists(e)}
-                />
-              </span>
+            <label htmlFor="importFile" className="importFile btn btn-primary" onClick={() => audioOnClick.play()}>
+              <FontAwesomeIcon icon={faCloudUploadAlt}/> Import lists
+            </label>
+            <input
+              type='file'
+              id='importFile'
+              accept='.json'
+              onChange={e => handleImportLists(e)}
+            />
+          </span>
         </Col>
       </Row>
     </>

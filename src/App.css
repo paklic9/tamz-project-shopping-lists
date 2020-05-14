@@ -29,6 +29,14 @@
   margin-top: 15pt;
 }
 
+.table, .table th, .table td {
+  border: 1px solid black !important;
+}
+
+.lists {
+  border-color: black !important;
+}
+
 .content {
   /*min-height: 50vh;*/
 }

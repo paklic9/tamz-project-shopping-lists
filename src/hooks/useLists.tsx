@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {setLists} from "../actions";
-import {IState} from "../types";
+import {IList, IState} from "../types";
 
 const useLists = () => {
   const dispatch = useDispatch();
@@ -18,6 +18,7 @@ const useLists = () => {
         const item = JSON.parse(localStorage.getItem(myKey as string) as string);
         lists.push(item);
       }
+      lists.sort((a:IList,b:IList) => +new Date(a.date).getTime() - +new Date(b.date).getTime());
       dispatch(setLists(lists));
     }
     else if(localStorage.length === 0 && clearing){
