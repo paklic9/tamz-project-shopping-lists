@@ -21,8 +21,7 @@ const Layout: React.FC = () => {
         <Col>
           <Switch>
             <BrowserRouter basename={window.location.pathname || ''}>
-              <Route path="/about" component={About}/>
-              <Route path="/" component={Lists}/>
+              <Route exact path="/" component={Lists}/>
             </BrowserRouter>
           </Switch>
         </Col>
