@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Link, Route, Switch, useHistory, BrowserRouter} from "react-router-dom";
+import {Link, Route, Switch, useHistory} from "react-router-dom";
 import {Col, Container, Row} from "react-bootstrap";
 import Lists from "./Lists";
 import About from "./About";
@@ -20,9 +20,8 @@ const Layout: React.FC = () => {
       <Row className="content">
         <Col>
           <Switch>
-            <BrowserRouter basename={window.location.pathname || ''}>
-              <Route exact path="/" component={Lists}/>
-            </BrowserRouter>
+            <Route path="/about" component={About}/>
+            <Route path="/" component={Lists}/>
           </Switch>
         </Col>
       </Row>
