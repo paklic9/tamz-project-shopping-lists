@@ -1,9 +1,12 @@
 import * as React from 'react';
 import {Button, Col, Row} from "react-bootstrap";
 import {useHistory} from "react-router-dom";
+import {useDispatch} from "react-redux";
+import {setNewItemButtonVisiblity} from "../actions";
 
 const About: React.FC = () => {
   const {push} = useHistory();
+  const dispatch = useDispatch();
 
   return (
     <div className="aboutPage">
@@ -21,7 +24,10 @@ const About: React.FC = () => {
       </Row>
       <Row>
         <Col>
-          <Button onClick={() => push('/')}>
+          <Button onClick={() => {
+            dispatch(setNewItemButtonVisiblity(false));
+            push('/');
+          }}>
             Back to Home Page
           </Button>
         </Col>
