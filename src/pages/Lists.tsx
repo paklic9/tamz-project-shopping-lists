@@ -29,8 +29,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import {setNewItemButtonVisiblity} from "../actions";
 
-const popSound = require("../assets/pop.mp3");
-const emptyTrash = require("../assets/RecycleBin.mp3");
+const popSound = require("../assets/sound/pop.mp3");
+const emptyTrash = require("../assets/sound/RecycleBin.mp3");
 
 const Lists: React.FC = () => {
   const dispatch = useDispatch();

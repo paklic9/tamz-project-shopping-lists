@@ -2,7 +2,7 @@
 
 This app stores shopping lists and was created by student Vojtěch Zámečník in the subject TAMZ 1 (Creating applications for mobile devices) in the second year of studies.
 
-This app can be also downloaded as apk and installed on android devices. You can find apk file in `/android/apk/shopping_lists.apk`
+This app can be also downloaded as apk and installed on android devices. You can find apk file in `/src/assets/apk/shopping_lists.apk`
 
 You can find demo at this url: https://shoppinglists.netlify.app/
 
