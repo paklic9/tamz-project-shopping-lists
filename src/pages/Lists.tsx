@@ -51,12 +51,8 @@ const Lists: React.FC = () => {
 
   function addSoundToButtons() {
     const bns = document.getElementsByTagName("button");
-    const svgs = document.getElementsByTagName("svg");
     for (let i = 0; i < bns.length; i++) {
       bns[i].addEventListener("click", () => audioOnClick.play());
-    }
-    for (let i = 0; i < svgs.length; i++) {
-      svgs[i].addEventListener("click", () => audioOnClick.play());
     }
   }
 
