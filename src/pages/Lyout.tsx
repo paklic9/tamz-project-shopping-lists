@@ -5,6 +5,7 @@ import Lists from "./Lists";
 import About from "./About";
 import {setNewItemButtonVisiblity} from "../actions";
 import {useDispatch} from "react-redux";
+import {audioOnClick} from "../components/lists/Sounds";
 
 const shopping_lists = require("../assets/apk/shopping_lists.apk");
 
@@ -12,6 +13,17 @@ const Layout: React.FC = () => {
   const {push} = useHistory();
   const {pathname} = useLocation();
   const dispatch = useDispatch();
+
+  function addSoundToButtons() {
+    const bns = document.getElementsByTagName("button");
+    for (let i = 0; i < bns.length; i++) {
+      bns[i].addEventListener("click", () => audioOnClick.play());
+    }
+  }
+
+  window.addEventListener("load", () => {
+    addSoundToButtons();
+  });
 
   return (
     <Container fluid>

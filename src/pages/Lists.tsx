@@ -19,21 +19,10 @@ const Lists: React.FC = () => {
   const {refetchLists, lists} = useLists();
   const newItemButtonVisiblity = useSelector<IState, boolean>(state => state.newItemButtonVisibility);
 
-  function addSoundToButtons() {
-    const bns = document.getElementsByTagName("button");
-    for (let i = 0; i < bns.length; i++) {
-      bns[i].addEventListener("click", () => audioOnClick.play());
-    }
-  }
-
-  window.addEventListener("load", () => {
-    addSoundToButtons();
-  });
-
   const resetInputs = React.useCallback(() => {
     if (newItem) {
       (document.getElementById('priority') as HTMLInputElement).checked = false;
-      (document.getElementById('text') as HTMLInputElement).value = "";
+      (document.getElementById('textNew') as HTMLInputElement).value = "";
       setNewItem(false);
     }
     setNewItemText('');

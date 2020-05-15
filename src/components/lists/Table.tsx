@@ -39,27 +39,6 @@ const Table: React.FC<IProps> = (
   }) => {
   const {refetchLists} = useLists();
 
-  const handleAddItemToList = React.useCallback((key: IList['key']) => {
-    const valid = (document.getElementById('text') as HTMLInputElement).validity.valid;
-    if (valid) {
-      const list: IList = JSON.parse(localStorage.getItem(key) as string);
-      const newDetail: IListDetail = {
-        id: list.detail.length > 0 ? list.detail[list.detail.length - 1].id + 1 : 1,
-        text: newItemText,
-        priority: newItemPriority,
-        date: new Date()
-      }
-      list.detail.push(newDetail);
-      const myJSON = JSON.stringify(list);
-      localStorage.setItem(list.key, myJSON);
-      resetInputs();
-      refetchLists();
-      setShowErrorText(false);
-    } else {
-      setShowErrorText(true);
-    }
-  }, [resetInputs, newItemText, newItemPriority, refetchLists, setShowErrorText])
-
   const handleEditItemInList = React.useCallback((key: IList['key'], detail: IListDetail) => {
     const valid = (document.getElementById('text') as HTMLInputElement).validity.valid;
     if (valid) {
@@ -175,7 +154,8 @@ const Table: React.FC<IProps> = (
       ))}
       {newItem ? (
         <NewItem resetInputs={resetInputs} setNewItemPriority={setNewItemPriority} setNewItemText={setNewItemText}
-                 list={list} handleAddItemToList={handleAddItemToList}/>
+                 list={list} newItemText={newItemText} setShowErrorText={setShowErrorText}
+                 newItemPriority={newItemPriority}/>
       ) : undefined}
       </tbody>
     </TableB>
