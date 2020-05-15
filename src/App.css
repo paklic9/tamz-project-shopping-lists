@@ -3,7 +3,7 @@
 }
 
 .btn {
-  margin: 5pt 0 0 0 !important;
+  margin: 5pt 5pt 0 0 !important;
 }
 
 .addNewItemButton {
@@ -74,7 +74,7 @@
 .text {
   /*min-width: 23vh;*/
   /*min-width: 100pt;*/
-  min-width: 91pt;
+  /*min-width: 91pt !important;*/
   /*min-width: 16vh;*/
 }
 

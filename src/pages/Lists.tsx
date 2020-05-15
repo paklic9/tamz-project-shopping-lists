@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {
+  Alert,
   Button,
   Col,
   Form,
@@ -43,6 +44,8 @@ const Lists: React.FC = () => {
   const [newItemPriority, setNewItemPriority] = React.useState<boolean>(false);
   const {refetchLists, lists} = useLists();
   const newItemButtonVisiblity = useSelector<IState, boolean>(state => state.newItemButtonVisibility);
+  const [showErrorText, setShowErrorText] = React.useState(false);
+  const [showErrorListName, setShowErrorListName] = React.useState(false);
   const audioOnClick = new Audio(popSound);
   const audioOnDelete = new Audio(emptyTrash);
 
@@ -97,17 +100,24 @@ const Lists: React.FC = () => {
   }, [editListObj, refetchLists, dispatch])
 
   const handleAddList = React.useCallback(() => {
-    const myDate = new Date();
-    const myKey = newListName + myDate.getTime();
-    const myObj = {key: myKey, name: newListName, detail: [], date: new Date()};
-    const myJSON = JSON.stringify(myObj);
-    localStorage.setItem(myKey, myJSON);
-    handleModalClose();
-    refetchLists();
+    const valid = (document.getElementById('name') as HTMLInputElement).validity.valid;
+    if (valid) {
+      const myDate = new Date();
+      const myKey = newListName + myDate.getTime();
+      const myObj = {key: myKey, name: newListName, detail: [], date: new Date()};
+      const myJSON = JSON.stringify(myObj);
+      localStorage.setItem(myKey, myJSON);
+      handleModalClose();
+      refetchLists();
+      setShowErrorListName(false);
+    } else {
+      setShowErrorListName(true);
+    }
   }, [newListName, refetchLists])
 
   const handleSaveList = React.useCallback(() => {
-    if (editListObj) {
+    const valid = (document.getElementById('name') as HTMLInputElement).validity.valid;
+    if (editListObj && valid) {
       const list: IList = JSON.parse(localStorage.getItem(editListObj!.key) as string);
       list.name = newListName;
       list.date = new Date();
@@ -117,22 +127,31 @@ const Lists: React.FC = () => {
       dispatch(setNewItemButtonVisiblity(false));
       handleModalClose();
       refetchLists();
+      setShowErrorListName(false);
+    } else if (!valid) {
+      setShowErrorListName(true);
     }
   }, [editListObj, refetchLists, newListName, dispatch])
 
   const handleAddItemToList = React.useCallback((key: IList['key']) => {
-    const list: IList = JSON.parse(localStorage.getItem(key) as string);
-    const newDetail: IListDetail = {
-      id: list.detail.length > 0 ? list.detail[list.detail.length - 1].id + 1 : 1,
-      text: newItemText,
-      priority: newItemPriority,
-      date: new Date()
+    const valid = (document.getElementById('text') as HTMLInputElement).validity.valid;
+    if (valid) {
+      const list: IList = JSON.parse(localStorage.getItem(key) as string);
+      const newDetail: IListDetail = {
+        id: list.detail.length > 0 ? list.detail[list.detail.length - 1].id + 1 : 1,
+        text: newItemText,
+        priority: newItemPriority,
+        date: new Date()
+      }
+      list.detail.push(newDetail);
+      const myJSON = JSON.stringify(list);
+      localStorage.setItem(list.key, myJSON);
+      resetInputs();
+      refetchLists();
+      setShowErrorText(false);
+    } else {
+      setShowErrorText(true);
     }
-    list.detail.push(newDetail);
-    const myJSON = JSON.stringify(list);
-    localStorage.setItem(list.key, myJSON);
-    resetInputs();
-    refetchLists();
   }, [resetInputs, newItemText, newItemPriority, refetchLists])
 
   const handleDeleteItemFromList = React.useCallback((key: IList['key'], detailId: number) => {
@@ -144,15 +163,20 @@ const Lists: React.FC = () => {
   }, [refetchLists])
 
   const handleEditItemInList = React.useCallback((key: IList['key'], detail: IListDetail) => {
-    console.log("aaaa");
-    setEditItem(null);
-    const list: IList = JSON.parse(localStorage.getItem(key) as string);
-    const newDetail: IListDetail = {id: detail.id, text: newItemText, priority: newItemPriority, date: new Date()}
-    list.detail[detail.id - 1] = {...newDetail};
-    const myJSON = JSON.stringify(list);
-    localStorage.setItem(list.key, myJSON);
-    resetInputs();
-    refetchLists();
+    const valid = (document.getElementById('text') as HTMLInputElement).validity.valid;
+    if (valid) {
+      setEditItem(null);
+      const list: IList = JSON.parse(localStorage.getItem(key) as string);
+      const newDetail: IListDetail = {id: detail.id, text: newItemText, priority: newItemPriority, date: new Date()}
+      list.detail[detail.id - 1] = {...newDetail};
+      const myJSON = JSON.stringify(list);
+      localStorage.setItem(list.key, myJSON);
+      resetInputs();
+      refetchLists();
+      setShowErrorText(false);
+    } else {
+      setShowErrorText(true);
+    }
   }, [newItemText, newItemPriority, refetchLists, resetInputs])
 
   const handleExportLists = React.useCallback(() => {
@@ -193,7 +217,6 @@ const Lists: React.FC = () => {
       <OverlayTrigger
         rootClose
         trigger="click"
-        key="top"
         placement="top"
         overlay={
           <Popover id={`popover-positioned-top`}>
@@ -235,7 +258,7 @@ const Lists: React.FC = () => {
           <Col>
             <Tab.Container id="list-group-tabs-example">
               <Row>
-                <Col xs={4} style={{minWidth: "125pt"}}>
+                <Col sm={12} md={4} lg={3} style={{minWidth: "125pt"}}>
                   <h2 className="listsTitle">Lists:</h2>
                   <ListGroup style={{marginTop: "5pt"}}>
                     {lists.map((list: IList, i) => (
@@ -249,13 +272,14 @@ const Lists: React.FC = () => {
                         }}
                         href={list.name + i}
                         key={list.name + i}
+                        style={editListObj?.name === list.name ? {backgroundColor: 'rgb(0, 123, 255)'} : {backgroundColor: 'rgb(220,220,220)'}}
                       >
                         {list.name}
                       </ListGroup.Item>
                     ))}
                   </ListGroup>
                 </Col>
-                <Col xs={8}>
+                <Col sm={12} md={8} lg={9}>
                   <Tab.Content>
                     {newItemButtonVisiblity && (
                       <div className="buttonAndTitleWrapper">
@@ -276,7 +300,7 @@ const Lists: React.FC = () => {
                       <Tab.Pane key={"list" + i} eventKey={list.name + i}>
                         <Table bordered hover size="sm" className="table">
                           <thead>
-                          <tr>
+                          <tr style={{backgroundColor: 'rgb(220,220,220)'}}>
                             <th className="id">id</th>
                             <th className="text">Text</th>
                             <th className="priority">Priority</th>
@@ -290,12 +314,14 @@ const Lists: React.FC = () => {
                               style={detail.priority ? {
                                 backgroundColor: 'rgb(190,0,0)',
                                 color: 'white'
-                              } : {backgroundColor: 'white'}}
+                              } : {backgroundColor: 'rgb(220,220,220)'}}
                             >
                               <td className="textCentered">{detail.id}</td>
                               <td>
                                 {editItem?.editingItemId === detail.id ? (
                                   <FormControl
+                                    id="text"
+                                    required
                                     as="textarea"
                                     value={newItemText}
                                     onChange={handleInputChange(setNewItemText)}
@@ -374,6 +400,7 @@ const Lists: React.FC = () => {
                               </td>
                               <td>
                                 <FormControl
+                                  required
                                   id="text"
                                   as="textarea"
                                   onChange={handleInputChange(setNewItemText)}/>
@@ -416,6 +443,12 @@ const Lists: React.FC = () => {
                       </Tab.Pane>
                     ))}
                   </Tab.Content>
+                  {showErrorText ? (
+                    <Alert variant="danger" onClose={() => setShowErrorText(false)} dismissible>
+                      <Alert.Heading>Error</Alert.Heading>
+                      <p>Please fill the text input!</p>
+                    </Alert>
+                  ) : undefined}
                 </Col>
               </Row>
             </Tab.Container>
@@ -425,6 +458,7 @@ const Lists: React.FC = () => {
       <Row className="controls">
         <Col>
           <Modal
+            key="addModal"
             show={newList || editList}
             size="sm"
             aria-labelledby="contained-modal-title-vcenter"
@@ -437,9 +471,10 @@ const Lists: React.FC = () => {
               </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <Form.Group controlId="exampleForm.ControlInput1">
+              <Form.Group controlId="name">
                 <Form.Label>Name</Form.Label>
                 <Form.Control
+                  required
                   size="sm"
                   type="text"
                   placeholder="Enter list name"
@@ -447,6 +482,12 @@ const Lists: React.FC = () => {
                   onChange={handleInputChange(setNewListName)}
                 />
               </Form.Group>
+              {showErrorListName ? (
+                <Alert variant="danger" onClose={() => setShowErrorListName(false)} dismissible>
+                  <Alert.Heading>Error</Alert.Heading>
+                  <p>Please fill the name input!</p>
+                </Alert>
+              ) : undefined}
             </Modal.Body>
             <Modal.Footer>
               <Button onClick={() => {
