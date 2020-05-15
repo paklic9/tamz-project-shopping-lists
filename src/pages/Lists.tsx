@@ -208,7 +208,7 @@ const Lists: React.FC = () => {
   }, [refetchLists])
 
   //type: 1=remove all lists, 2=remove selected list, 3=remove item from list
-  const confirmDelete = (button: any, type: number, listKey = "", detailId = 0) => {
+  const confirmDelete = React.useCallback((button: any, type: number, listKey = "", detailId = 0) => {
     return (
       <OverlayTrigger
         rootClose
@@ -245,7 +245,7 @@ const Lists: React.FC = () => {
         {button}
       </OverlayTrigger>
     )
-  }
+  }, [audioOnClick, audioOnDelete, handleClear, handleDeleteItemFromList, handleRemoveList])
 
   return (
     <>
