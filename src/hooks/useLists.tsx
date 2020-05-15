@@ -18,7 +18,7 @@ const useLists = () => {
         const item = JSON.parse(localStorage.getItem(myKey as string) as string);
         lists.push(item);
       }
-      lists.sort((a:IList,b:IList) => +new Date(a.date).getTime() - +new Date(b.date).getTime());
+      lists.sort((a:IList,b:IList) => +new Date(b.date).getTime() - +new Date(a.date).getTime());
       dispatch(setLists(lists));
     }
     else if(localStorage.length === 0 && clearing){

@@ -115,9 +115,12 @@ const Lists: React.FC = () => {
                           setEditListObj(list);
                           dispatch(setNewItemButtonVisiblity(true));
                         }}
-                        href={list.name + i}
-                        key={list.name + i}
-                        style={editListObj?.name === list.name ? {backgroundColor: 'rgb(0, 123, 255)'} : {backgroundColor: 'rgb(220,220,220)'}}
+                        href={list.key}
+                        key={list.key}
+                        style={editListObj?.key === list.key ? {
+                          backgroundColor: 'rgb(0, 123, 255)',
+                          color: 'rgb(255,255,255)'
+                        } : {backgroundColor: 'rgb(220,220,220)', color: 'rgb(0,0,0)'}}
                       >
                         {list.name}
                       </ListGroup.Item>
@@ -142,7 +145,7 @@ const Lists: React.FC = () => {
                       </div>
                     )}
                     {lists.map((list: IList, i) => (
-                      <Tab.Pane key={"list" + i} eventKey={list.name + i}>
+                      <Tab.Pane key={"list" + i} eventKey={list.key}>
                         <Table list={list} setNewItemText={setNewItemText} setNewItemPriority={setNewItemPriority}
                                resetInputs={resetInputs} newItem={newItem} confirmDelete={confirmDelete}
                                editItem={editItem} newItemPriority={newItemPriority} newItemText={newItemText}

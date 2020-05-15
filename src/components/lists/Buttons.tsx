@@ -1,14 +1,14 @@
 import * as React from 'react';
+import {ReactNode} from 'react';
 import {Alert, Button, Col, Form, Modal, Row} from "react-bootstrap";
 import {handleInputChange} from "../../utils";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCloudDownloadAlt, faCloudUploadAlt} from "@fortawesome/free-solid-svg-icons";
 import {IList} from "../../types";
-import {setNewItemButtonVisiblity} from "../../actions";
+// import {setNewItemButtonVisiblity} from "../../actions";
 import useLists from "../../hooks/useLists";
-import {useDispatch} from "react-redux";
+// import {useDispatch} from "react-redux";
 import {audioOnClick} from "./Sounds";
-import {ReactNode} from "react";
 
 interface IProps {
   editListObj: IList | null;
@@ -17,7 +17,7 @@ interface IProps {
 }
 
 const Buttons: React.FC<IProps> = ({editListObj, setEditListObj, confirmDelete}) => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const {refetchLists, lists} = useLists();
   const [newList, setNewList] = React.useState<Boolean>(false);
   const [editList, setEditList] = React.useState<Boolean>(false);
@@ -50,19 +50,20 @@ const Buttons: React.FC<IProps> = ({editListObj, setEditListObj, confirmDelete})
     const valid = (document.getElementById('name') as HTMLInputElement).validity.valid;
     if (editListObj && valid) {
       const list: IList = JSON.parse(localStorage.getItem(editListObj!.key) as string);
+      const myDate = new Date();
       list.name = newListName;
-      list.date = new Date();
+      list.date = myDate;
       const myJSON = JSON.stringify(list);
       localStorage.setItem(editListObj!.key, myJSON);
-      setEditListObj(null);
-      dispatch(setNewItemButtonVisiblity(false));
+      setEditListObj(list);
+      //dispatch(setNewItemButtonVisiblity(false));
       handleModalClose();
       refetchLists();
       setShowErrorListName(false);
     } else if (!valid) {
       setShowErrorListName(true);
     }
-  }, [editListObj, refetchLists, newListName, dispatch, setEditListObj])
+  }, [editListObj, refetchLists, newListName, setEditListObj/*, dispatch*/])
 
   const handleExportLists = React.useCallback(() => {
     const element = document.createElement("a");
@@ -84,7 +85,7 @@ const Buttons: React.FC<IProps> = ({editListObj, setEditListObj, confirmDelete})
           importedLists.forEach((list: IList, index) => {
             const myDate = new Date();
             const myKey = list.name + myDate.getTime() + index;
-            const myObj = {key: myKey, name: list.name, detail: list.detail};
+            const myObj = {key: myKey, name: list.name, detail: list.detail, date: list.date};
             const myJSON = JSON.stringify(myObj);
             localStorage.setItem(myKey, myJSON);
           })
